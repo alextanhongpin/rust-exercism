@@ -12,16 +12,19 @@ pub fn find() -> Option<u32> {
     // }
     // let c_i = 1000 - a_i - b_i;
     // Some(a_i * b_i * c_i)
+    
+
    let result: Vec<u32> = (1..=1000)
-        .flat_map(move |a: u32| {
+        .flat_map(move|a: u32| {
             (1..=1000)
             .map(move|b: u32| {
-                let c = ((a.pow(2) + b.pow(2)) as f32).sqrt() as u32;
-                (a, b, c)
+                // Downcasting c to u32 will result in multiple incorrect solutions
+                let c = ((a.pow(2) + b.pow(2)) as f32).sqrt(); 
+                (a as f32, b as f32, c)
             })
-            .filter(|(a, b, c)| a + b + c == 1000 && (a * a + b * b == c * c))
         })
-        .map(|(a, b, c)| a * b * c)
+        .filter(|(a, b, c)| a + b + c == 1000.0)
+        .map(|(a, b, c)| (a * b * c) as u32)
         .collect();
         
     result.first().cloned()
