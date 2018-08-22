@@ -1,19 +1,19 @@
 pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
+    // PSEUDO-CODE
+    // Find the maximum values from each rows
+    // Save the positions of the maximum values for each rows
+    // Find the minimum positions from each columns
+    // Save the positions of the minimum values for each columns
+    // Check the intersection between the columns and rows
     let mut max_rows: Vec<(usize, usize)> = vec![];
     for (i, rows) in input.iter().enumerate() {
-        let mut max_i = 0;
-        let mut max_row = u64::min_value();
+        let max = rows.iter().max();
         for (j, col) in rows.iter().enumerate() {
-           if *col > max_row {
-               max_i = j;
-               max_row = *col;
+           match max {
+               Some(max) if col >= max => max_rows.push((i, j)),
+               Some(_) => (),
+               None => () 
            }
-        }
-        max_rows.push((i, max_i));
-        for (j, col) in rows.iter().enumerate() {
-            if j != max_i && *col == max_row {
-                max_rows.push((i, j));
-            }
         }
     }
 
@@ -21,18 +21,10 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
     let row_len = input.len(); 
     let mut solution: Vec<(usize, usize)> = vec![];
     for i in 0..col_len {
-        let mut min_i = 0;
-        let mut min_col = u64::max_value(); 
+        let min = (0..row_len).map(|j| input[j][i]).min().unwrap();
         for j in 0..row_len {
-            if input[j][i] < min_col {
-                min_col = input[j][i];
-                min_i = j;
-            }
-        }
-        solution.extend(max_rows.iter().filter(|(row, col)| *row == min_i && *col == i));
-        for j in 0..row_len {
-            if input[j][i] == min_col && min_i != j {
-               solution.extend(max_rows.iter().filter(|(row, col)| *row == j && *col == i));
+            if input[j][i] <= min {
+                solution.extend(max_rows.iter().filter(|(row, col)| *row == j && *col == i));
             }
         }
     }
